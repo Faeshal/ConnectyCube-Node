@@ -10,6 +10,7 @@ module.exports = (sequelize) => {
     name: DataTypes.STRING,
     email: DataTypes.STRING,
     password: DataTypes.STRING,
-    connectycubeRaw: DataTypes.TEXT,
+    conCubeId: DataTypes.STRING,
+    conCubePassword: DataTypes.STRING,
   });
 };

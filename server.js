@@ -5,6 +5,8 @@ const PORT = 1000 || process.env.PORT;
 const morgan = require("morgan");
 const userRoutes = require("./route/user");
 const sequelize = require("./model/index");
+const log = require("log4js").getLogger("entrypoing");
+log.level = "info";
 
 app.use(express.json());
 
@@ -30,9 +32,9 @@ app.get("*", function (req, res) {
     // await sequelize.authenticate();
     await sequelize.sync();
     // await sequelize.sync({ alter: true });
-    console.log("MySQL Connected");
+    log.info("MySQL Connected");
   } catch (error) {
-    console.error("Database Connection Failure ", error);
+    log.error("Database Connection Failure ", error);
     process.exit(1);
   }
 })();
@@ -43,5 +45,5 @@ app.listen(PORT, (err) => {
     console.error(`Error : ${err}`);
     process.exit(1);
   }
-  console.log(`Server is Running On Port : ${PORT}`);
+  log.info(`Server is Running On Port : ${PORT}`);
 });

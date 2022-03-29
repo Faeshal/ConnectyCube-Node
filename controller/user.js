@@ -1,11 +1,22 @@
+require("dotenv").config();
 require("pretty-error").start();
 const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcrypt");
 const uniqid = require("uniqid");
 const { models } = require("../model");
+const User = models.user;
+const ConnectyCube = require("connectycube");
 const { validationResult } = require("express-validator");
 const { ErrorResponse } = require("../middleware/errorHandler");
-const User = models.user;
+const { conCubeDeleteUser, conCubeRegister } = require("../util/conCube");
+
+// * Cred ConnectyCube
+const CREDENTIALS = {
+  appId: process.env.CCUBE_APP_ID,
+  authKey: process.env.CCUBE_AUTH_KEY,
+  authSecret: process.env.CCUBE_AUTH_SECRET,
+};
+ConnectyCube.init(CREDENTIALS);
 
 // * @route   POST api/auth/register
 // @desc      Signup new user
@@ -32,6 +43,9 @@ exports.register = asyncHandler(async (req, res, next) => {
 
   // * Generate Api_Key
   const apiKey = uniqid() + uniqid.process();
+
+  // * ConnectyCube
+  conCubeRegister({ name, email, password });
 
   const user = new User({
     name,
@@ -98,6 +112,21 @@ exports.updateUser = asyncHandler(async (req, res, next) => {
 // @access  Private
 exports.deleteUser = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
+
+  // * Delete in connectycube
+  const user = await User.findByPk(id);
+  if (!user) {
+    return res.json({ success: false, message: "not found" });
+  }
+
+  // * delete in conCube
+  await conCubeDeleteUser({
+    conCubeId: user.conCubeId,
+    conCubePassword: user.conCubePassword,
+    email: user.email,
+  });
+
+  // * delete in db
   const data = await User.destroy({ where: { id } });
   res.status(201).json({ success: true, data });
 });
