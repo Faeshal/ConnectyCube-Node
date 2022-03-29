@@ -1,0 +1,26 @@
+{
+  "name": "dummy-rest-sql",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "express-async-handler": "^1.2.0",
+    "express-validator": "^6.14.0",
+    "log4js": "^6.4.4",
+    "morgan": "^1.10.0",
+    "mysql2": "^2.3.3",
+    "nodemon": "^2.0.15",
+    "pretty-error": "^4.0.0",
+    "sequelize": "^6.12.0-alpha.1",
+    "uniqid": "^5.4.0"
+  }
+}
