@@ -108,16 +108,15 @@ async function conCubeRegister(options) {
     }
 
     // * Encrypt
-    const encryptQbPass = CryptoJS.AES.encrypt(password, CRYPTO_KEY).toString();
-    await User.update(
-      { conCubeId: conCubeResponse.user.id, conCubePassword: encryptQbPass },
-      { where: { email } }
-    );
+    const encryptPass = CryptoJS.AES.encrypt(password, CRYPTO_KEY).toString();
 
     return {
       success: true,
       statusCode: 200,
-      data: "success",
+      data: {
+        conCubeId: conCubeResponse.user.id,
+        conCubePassword: encryptPass,
+      },
     };
   } catch (err) {
     log.error(err);
@@ -135,9 +134,9 @@ async function conCubeDeleteUser(options) {
     let { conCubeId, conCubePassword, email } = options;
 
     // * Decrypt conCubePassword
-    const encryptQb = CryptoJS.AES.decrypt(conCubePassword, CRYPTO_KEY);
-    const decryptQb = encryptQb.toString(CryptoJS.enc.Utf8);
-    conCubePassword = decryptQb;
+    const encryptPassword = CryptoJS.AES.decrypt(conCubePassword, CRYPTO_KEY);
+    const decryptPassword = encryptPassword.toString(CryptoJS.enc.Utf8);
+    conCubePassword = decryptPassword;
 
     const producerObj = {
       conCubeId: parseInt(conCubeId),
@@ -172,9 +171,9 @@ async function conCubeCreateDialog(options) {
     let { chemistryId, conCubeId, email, conCubePassword } = options;
 
     // * Decrypt conCubePassword
-    const encryptQb = CryptoJS.AES.decrypt(conCubePassword, CRYPTO_KEY);
-    const decryptQb = encryptQb.toString(CryptoJS.enc.Utf8);
-    conCubePassword = decryptQb;
+    const encryptPassword = CryptoJS.AES.decrypt(conCubePassword, CRYPTO_KEY);
+    const decryptPassword = encryptPassword.toString(CryptoJS.enc.Utf8);
+    conCubePassword = decryptPassword;
 
     const producerObj = {
       dialog: { type: 3, occupants_ids: [conCubeId] },
@@ -189,7 +188,7 @@ async function conCubeCreateDialog(options) {
     }
 
     // await User_Chemistry.update(
-    //   { qbDialogId: conCubeResponse._id, qbDialogRaw: conCubeResponse },
+    //   { conCubeDialogId: conCubeResponse._id, conCubeDialogRaw: conCubeResponse },
     //   { where: { id: chemistryId } }
     // );
 
@@ -214,9 +213,9 @@ async function conCubeUpdateEmail(options) {
     let { conCubeId, conCubePassword, email, newEmail } = options;
 
     // * Decrypt conCubePassword
-    const encryptQb = CryptoJS.AES.decrypt(conCubePassword, CRYPTO_KEY);
-    const decryptQb = encryptQb.toString(CryptoJS.enc.Utf8);
-    conCubePassword = decryptQb;
+    const encryptPassword = CryptoJS.AES.decrypt(conCubePassword, CRYPTO_KEY);
+    const decryptPassword = encryptPassword.toString(CryptoJS.enc.Utf8);
+    conCubePassword = decryptPassword;
 
     const producerObj = {
       conCubeId: parseInt(conCubeId),
@@ -256,9 +255,9 @@ async function conCubePushNotif(options) {
       options;
 
     // * Decrypt conCubePassword
-    const encryptQb = CryptoJS.AES.decrypt(conCubePassword, CRYPTO_KEY);
-    const decryptQb = encryptQb.toString(CryptoJS.enc.Utf8);
-    conCubePassword = decryptQb;
+    const encryptPassword = CryptoJS.AES.decrypt(conCubePassword, CRYPTO_KEY);
+    const decryptPassword = encryptPassword.toString(CryptoJS.enc.Utf8);
+    conCubePassword = decryptPassword;
 
     // * Prepare Push NOtif Body
     const payload = JSON.stringify({

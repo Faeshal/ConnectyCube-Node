@@ -53,13 +53,18 @@ exports.register = asyncHandler(async (req, res, next) => {
   const apiKey = uniqid() + uniqid.process();
 
   // * ConnectyCube
-  conCubeRegister({ name, email, password });
+  const conCubeUtil = await conCubeRegister({ name, email, password });
+  if (conCubeUtil.message == false) {
+    return next(new ErrorResponse("3rd party service failed", 500));
+  }
 
   const user = new User({
     name,
     email,
     password: hashedPw,
     apiKey,
+    conCubeId: conCubeUtil.data.conCubeId,
+    conCubePassword: conCubeUtil.data.conCubePassword,
   });
   await user.save();
 
@@ -102,7 +107,7 @@ exports.login = asyncHandler(async (req, res, next) => {
 // @desc    get all users
 // @access  Private
 exports.getUsers = asyncHandler(async (req, res, next) => {
-  const data = await User.findAll();
+  const data = await User.findAll({ order: [["id", "DESC"]] });
   res.status(201).json({ success: true, totalData: data.length, data });
 });
 
@@ -165,11 +170,14 @@ exports.deleteUser = asyncHandler(async (req, res, next) => {
   }
 
   // * delete in conCube
-  await conCubeDeleteUser({
+  const conCubeUtil = await conCubeDeleteUser({
     conCubeId: user.conCubeId,
     conCubePassword: user.conCubePassword,
     email: user.email,
   });
+  if (conCubeUtil.message == false) {
+    return next(new ErrorResponse("3rd party service failed", 500));
+  }
 
   // * delete in db
   const data = await User.destroy({ where: { id } });
