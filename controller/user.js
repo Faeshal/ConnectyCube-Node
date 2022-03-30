@@ -8,7 +8,11 @@ const User = models.user;
 const ConnectyCube = require("connectycube");
 const { validationResult } = require("express-validator");
 const { ErrorResponse } = require("../middleware/errorHandler");
-const { conCubeDeleteUser, conCubeRegister } = require("../util/conCube");
+const {
+  conCubeDeleteUser,
+  conCubeRegister,
+  conCubeUpdateEmail,
+} = require("../util/conCube");
 
 // * Cred ConnectyCube
 const CREDENTIALS = {
@@ -99,12 +103,49 @@ exports.getUsers = asyncHandler(async (req, res, next) => {
 });
 
 // * @route POST  /api/users
-// @desc    update New users
+// @desc    update users email
 // @access  Private
-exports.updateUser = asyncHandler(async (req, res, next) => {
+exports.updateEmail = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
-  const data = await User.update(req.body, { where: { id } });
-  res.status(201).json({ success: true, data });
+  const { currentEmail, newEmail } = req.body;
+
+  // * Check Valid Email
+  const isValid = await User.findOne({
+    where: { email: currentEmail },
+    raw: true,
+  });
+  if (!isValid) {
+    return next(new ErrorResponse("current email was not found", 404));
+  }
+
+  // * Check Email was taken or not
+  const isTaken = await User.findOne({
+    where: { email: newEmail },
+    attributes: ["id"],
+    raw: true,
+  });
+  if (isTaken) {
+    return next(new ErrorResponse("email already taken by another user", 400));
+  }
+
+  // * conCube utils
+  const conCubeUtil = await conCubeUpdateEmail({
+    conCubeId: isValid.conCubeId,
+    conCubePassword: isValid.conCubePassword,
+    email: currentEmail,
+    newEmail,
+  });
+  if (conCubeUtil.success == false) {
+    return next(new ErrorResponse("conCube update email failed", 500));
+  }
+
+  // * Save New Email
+  await User.update({ email: newEmail }, { where: { id } });
+
+  res.status(200).json({
+    success: true,
+    message: "email sucesfully change",
+  });
 });
 
 // * @route POST  /api/users

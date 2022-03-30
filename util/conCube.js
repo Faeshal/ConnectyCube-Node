@@ -124,7 +124,7 @@ async function conCubeRegister(options) {
     return {
       success: false,
       statusCode: 500,
-      message: "QB register failed",
+      message: "conCube register failed",
     };
   }
 }
@@ -168,7 +168,7 @@ async function conCubeDeleteUser(options) {
 
 async function conCubeCreateDialog(options) {
   try {
-    log.warn("QB create dialog started...", options);
+    log.warn("conCube create dialog started...", options);
     let { chemistryId, conCubeId, email, conCubePassword } = options;
 
     // * Decrypt conCubePassword
@@ -220,7 +220,7 @@ async function conCubeUpdateEmail(options) {
 
     const producerObj = {
       conCubeId: parseInt(conCubeId),
-      login: { login: email, password: qbPassword },
+      login: { login: email, password: conCubePassword },
       newEmail,
     };
     const conCubeResponse = await updateEmail(producerObj);
