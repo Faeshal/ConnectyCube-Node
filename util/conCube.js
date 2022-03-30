@@ -184,7 +184,7 @@ async function conCubeCreateDialog(options) {
     const conCubeResponse = await createDialog(producerObj);
     log.info("conCubeResponse", conCubeResponse);
     if (conCubeResponse.success == false) {
-      log.error("cc not returning value");
+      log.error("conCube not returning value");
       return { success: false, statusCode: 500, message: "conCube error" };
     }
 
@@ -193,11 +193,11 @@ async function conCubeCreateDialog(options) {
     //   { where: { id: chemistryId } }
     // );
 
-    // return {
-    //   success: true,
-    //   statusCode: 200,
-    //   data: { qbDialogId: conCubeResponse._id },
-    // };
+    return {
+      success: true,
+      statusCode: 200,
+      data: conCubeResponse,
+    };
   } catch (err) {
     log.error(err);
     return {

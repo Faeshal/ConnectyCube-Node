@@ -12,7 +12,11 @@ const {
   conCubeDeleteUser,
   conCubeRegister,
   conCubeUpdateEmail,
+  conCubeCreateDialog,
+  conCubeGetDialog,
 } = require("../util/conCube");
+const log = require("log4js").getLogger("conCube-util");
+log.level = "info";
 
 // * Cred ConnectyCube
 const CREDENTIALS = {
@@ -170,4 +174,25 @@ exports.deleteUser = asyncHandler(async (req, res, next) => {
   // * delete in db
   const data = await User.destroy({ where: { id } });
   res.status(201).json({ success: true, data });
+});
+
+// * @route POST  /api/users/dialogs
+// @desc    create dialogs
+// @access  Private
+exports.createDialog = asyncHandler(async (req, res, next) => {
+  const { creatorId, targetId } = req.body;
+
+  // * query creator
+  const creator = await User.findOne({ where: { conCubeId: creatorId } });
+  log.debug(creator);
+
+  // * create dialog in conCube
+  const result = await conCubeCreateDialog({
+    conCubeId: targetId,
+    email: creator.email,
+    conCubePassword: creator.conCubePassword,
+  });
+  log.debug("result", result);
+
+  res.status(201).json({ success: true, result });
 });

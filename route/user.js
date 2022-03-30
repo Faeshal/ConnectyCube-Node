@@ -10,4 +10,6 @@ router.get("/api/v1/users", userController.getUsers);
 router.put("/api/v1/users/:id", userController.updateEmail);
 router.delete("/api/v1/users/:id", userController.deleteUser);
 
+router.post("/api/v1/users/dialogs", userController.createDialog);
+
 module.exports = router;
